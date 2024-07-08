@@ -4,7 +4,7 @@ A ChatGPT-powered system that can link students and teachers.
 
 Preparation:
 
-In File depository Terminal:
+In File directory Terminal:
 
 pip install django-simpleui
 
