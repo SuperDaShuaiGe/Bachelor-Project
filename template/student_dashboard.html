@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #6c757d !important; /* Bootstrap grey */
+            padding-left: 275px; /* Set the left padding to the sidebar width */
+        }
+        .card {
+            border: 1px solid #dee2e6; /* Light gray border */
+            background-color: #f8f9fa; /* Very light gray background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Add subtle shadows */
+            margin-bottom: 20px; /* Increase bottom spacing */
+            min-width: 200px; /* Set minimum width */
+        }
+        .card-header {
+            background-color: #007BFF;
+            color: white; /* Title text color */
+        }
+        .col-md-2 {
+            flex: 0 0 30%; /* The default width of Bootstrap is adjusted to 20% */
+            max-width: 30%; /* Limit the maximum width to maintain a five-column layout */
+        }
+        /* Side navigation bar style */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed; /* Fixed position, does not move when scrolling */
+            z-index: 1; /* Make sure it’s above the page content */
+            top: 0; /* Top Align */
+            left: 0; /* Align Left */
+            background-color: #111;
+            overflow-x: hidden; /* Hide horizontal scroll bar */
+            padding-top: 20px; /* Top padding */
+        }
+        /* Increase the width of the modal */
+        .modal-dialog {
+            max-width: 800px;
+        }
+        /* Sidebar link style */
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none; /* Remove underline */
+            font-size: 18px;
+            color: #818181;
+            display: block; /* Block-level elements */
+        }
+        .sidebar a:hover {
+            color: #f1f1f1; /* Mouseover Color */
+        }
+        /* Adjust the content area to prevent the content from being obscured by the sidebar */
+        .main-content {
+            margin-left: 250px; /* Same width as sidebar */
+            padding-left: 20px;
+        }
+        .modal-body pre {
+            background-color: #f8f9fa; /* Set the same color as the card background */
+            border: none;
+            white-space: pre-wrap; /* Allow word wrapping */
+            word-wrap: break-word; /* Automatically wrap long words or URLs */
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <h3>Learning Guides</h3>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <!-- other nav -->
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ user.username }}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- side navi -->
+<div class="sidebar">
+    <a href="/">Home</a>
+    <a href="/accounts/homework">Homework</a>
+</div>
+<div class="main-content">
+    <div class="container mt-4">
+    <h2>Your Guides</h2>
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Course Name: {{ course.name }}</h5>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#guideModal" data-guide="{{ course.guide }}" data-coursename="{{ course.name }}">View Guides</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="guideModal" tabindex="-1" role="dialog" aria-labelledby="guideModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="guideModalLabel">Guide Details</h5>
+        <button type= "button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Guide text will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    // when users click on "View Guides" button
+    $('[data-target="#guideModal"]').click(function() {
+        var guideText = $(this).attr('data-guide'); // Get the guide text from the data-guide attribute
+        var courseName = $(this).attr('data-coursename'); // Get the course name
+        $('#guideModalLabel').text(courseName + " Guide"); // Set the title of the modal box
+        $('.modal-body').html('<pre>' + guideText + '</pre>'); // Use the pre tag to set the guide text in the body of the modal, preserving the formatting
+    });
+});
+</script>
+</body>
+</html>

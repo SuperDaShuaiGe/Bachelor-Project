@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #6c757d !important;
+            padding-left: 275px;
+        }
+
+        .card {
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            min-width: 200px;
+        }
+
+        .card-header {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .col-md-2 {
+            flex: 0 0 30%;
+            max-width: 30%;
+        }
+
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+
+        .main-content {
+            margin-left: 100px;
+            padding-left: 15%;
+        }
+
+    </style>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <h3>Upload Learning Guides</h3>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#"></a>
+            </li>
+            <!-- other nav items-->
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ user.username }}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- side nav bar -->
+<div class="sidebar">
+    <a href="/">Home</a>
+      <a href="/accounts/edit">Edit</a>
+
+</div>
+<div class="main-content">
+
+
+    <div class="container mt-4">
+    <div class="row">
+        {% for course in courses %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body" style="height: 200px; position: relative;">
+                        <h5 class="card-title">Course name: {{ course.name }}</h5>
+                        {% if course.guide == 'no guide!' %}
+                            <form action="{% url 'upload_guide' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="fileUpload{{ course.id }}">Guide File:</label>
+                                    <input type="hidden" value="{{ course.id }}" name="course_id">
+                                    <input type="file" class="form-control-file" id="fileUpload{{ course.id }}"
+                                           name="fileUpload" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fileUpload{{ course.id }}">Rubric File:</label>
+                                    <input type="file" class="form-control-file" id="Rubric{{ course.id }}"
+                                           name="Rubric">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="position: absolute; bottom: 10px; right: 20px;">Upload</button>
+                            </form>
+                        {% else %}
+                            <button type="button" class="btn btn-primary" style="position: absolute; bottom: 10px; right: 20px;" data-toggle="modal"
+                                    data-target="#editGuideModal{{ course.id }}">
+                                Check
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="editGuideModal{{ course.id }}" tabindex="-1" role="dialog"
+                                 aria-labelledby="editGuideModalLabel{{ course.id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editGuideModalLabel{{ course.id }}">Edit
+                                                Guide</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="guideForm{{ course.id }}" action="{% url 'save_guide_changes' course.id %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="guideContent{{ course.id }}">Guide:</label>
+                                                    <textarea class="form-control" id="guideContent{{ course.id }}"
+                                                              name="guide" style="height: 150px;">{{ course.guide }}</textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" form="guideForm{{ course.id }}"
+                                                    class="btn btn-primary">Save changes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
